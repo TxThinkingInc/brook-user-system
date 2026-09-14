@@ -1,0 +1,1489 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-width=1.0">
+    <title data-i18n="title">Brook Store</title>
+    <style>
+        :root {
+            --primary: #111827;
+            --primary-hover: #374151;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --bg: #f8fafc;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --text: #111827;
+            --text-muted: #6b7280;
+            --border: #e2e8f0;
+            --input-bg: #f1f5f9;
+            --radius: 16px;
+            --radius-sm: 10px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg);
+            /* Premium Mesh Gradient Background */
+            background-image:
+                radial-gradient(at 0% 0%, hsla(217, 100%, 94%, 1) 0, transparent 50%),
+                radial-gradient(at 100% 0%, hsla(253, 100%, 94%, 1) 0, transparent 50%),
+                radial-gradient(at 100% 100%, hsla(286, 100%, 93%, 1) 0, transparent 50%),
+                radial-gradient(at 0% 100%, hsla(196, 100%, 94%, 1) 0, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+            min-height: 100vh;
+        }
+
+        /* App Layout (Sidebar + Content) */
+        .app-layout {
+            display: flex;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            flex-direction: row;
+            align-items: flex-start;
+            gap: 2rem;
+        }
+
+        /* Sidebar container */
+        .sidebar {
+            display: none;
+            /* hidden by default on mobile/login */
+            flex-direction: column;
+            width: 250px;
+            flex-shrink: 0;
+            position: sticky;
+            top: 2rem;
+            height: calc(100vh - 4rem);
+        }
+
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.85rem 1rem;
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            border-radius: var(--radius-sm);
+            transition: all 0.2s;
+            background: transparent;
+            border: 1px solid transparent;
+        }
+
+        .sidebar-link:hover,
+        .sidebar-link.active {
+            background-color: var(--card-bg);
+            border-color: rgba(255, 255, 255, 0.8);
+            box-shadow: var(--shadow);
+            color: var(--accent);
+        }
+
+        .sidebar-link svg {
+            width: 18px;
+            height: 18px;
+            color: var(--text-muted);
+            transition: color 0.2s;
+        }
+
+        .sidebar-link:hover svg,
+        .sidebar-link.active svg {
+            color: var(--accent);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            transition: max-width 0.3s ease;
+            margin: 0 auto;
+        }
+
+        .container.dashboard-mode {
+            max-width: 760px;
+            flex-grow: 1;
+            margin: 0;
+        }
+
+        /* Show sidebar only in dashboard mode on desktop */
+        @media (min-width: 768px) {
+            .app-layout.dashboard-mode .sidebar {
+                display: flex;
+            }
+        }
+
+        /* Responsive adjustments for mobile */
+        @media (max-width: 767px) {
+            .app-layout {
+                flex-direction: column;
+                gap: 0;
+            }
+
+            .sidebar {
+                display: none !important;
+                /* Always hide on mobile */
+            }
+
+            .container.dashboard-mode {
+                margin: 0 auto;
+                padding: 1.5rem 1rem;
+            }
+
+            .hide-on-mobile {
+                display: none !important;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .hide-on-desktop {
+                display: none !important;
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        h1.logo {
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -0.05em;
+            background: linear-gradient(135deg, #111827 0%, #4b5563 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        h1.logo svg {
+            color: var(--accent);
+            width: 32px;
+            height: 32px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            font-weight: 500;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: var(--radius);
+            padding: 2.5rem;
+            box-shadow: var(--shadow-lg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            margin-bottom: 2rem;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.025em;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background-color: var(--card-bg);
+            font-size: 1rem;
+            transition: all 0.2s;
+            color: var(--text);
+        }
+
+        .form-control::placeholder {
+            color: #9ca3af;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent);
+            background-color: #fff;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        .code-row {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .code-row .form-control {
+            flex: 1;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            text-align: center;
+            white-space: nowrap;
+            border: 1px solid transparent;
+            padding: 0.85rem 1.5rem;
+            font-size: 1rem;
+            border-radius: var(--radius-sm);
+            color: #fff;
+            background-color: var(--primary);
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+
+        .btn:disabled {
+            background-color: var(--border);
+            color: var(--text-muted);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-block {
+            display: flex;
+            width: 100%;
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text);
+            border-color: var(--border);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--input-bg);
+            color: var(--primary);
+        }
+
+        .btn-success {
+            background-color: #10b981;
+        }
+
+        .btn-success:hover {
+            background-color: #059669;
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .alert-error {
+            color: #991b1b;
+            background-color: #fef2f2;
+            border: 1px solid #fecaca;
+        }
+
+        .alert-success {
+            color: #065f46;
+            background-color: #ecfdf5;
+            border: 1px solid #a7f3d0;
+        }
+
+        /* Dashboard Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem 1rem;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-value {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .stat-value.email {
+            font-size: 0.95rem;
+            word-break: break-all;
+        }
+
+        /* Sub Link Box */
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text);
+        }
+
+        .section-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .link-box-container {
+            position: relative;
+            margin-bottom: 2.5rem;
+        }
+
+        .link-box {
+            background-color: var(--input-bg);
+            border: 1px solid var(--border);
+            padding: 1.25rem;
+            padding-right: 4rem;
+            border-radius: var(--radius-sm);
+            word-break: break-all;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 0.9rem;
+            color: var(--text);
+            line-height: 1.5;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 50%;
+            right: 0.75rem;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            padding: 0.5rem;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .copy-btn:hover {
+            color: var(--primary);
+        }
+
+        .copy-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Downloads */
+        .downloads-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .downloads-grid .btn {
+            padding: 0.75rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .downloads-grid svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Tutorial */
+        .tutorial-card {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2rem;
+        }
+
+        .tutorial-card ol {
+            padding-left: 1.2rem;
+            margin-bottom: 1.5rem;
+            color: var(--text);
+        }
+
+        .tutorial-card li {
+            margin-bottom: 0.75rem;
+            padding-left: 0.5rem;
+        }
+
+        .tutorial-card li::marker {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .tutorial-tip {
+            background: rgba(37, 99, 235, 0.05);
+            border: 1px solid rgba(37, 99, 235, 0.1);
+            color: #1e3a8a;
+            padding: 1rem 1.25rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-start;
+        }
+
+        .tutorial-tip svg {
+            flex-shrink: 0;
+            margin-top: 2px;
+            color: var(--accent);
+        }
+
+        /* Rewards */
+        .rewards-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .rewards-list li {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            color: var(--text);
+            font-size: 0.95rem;
+        }
+
+        .rewards-list li:last-child {
+            border-bottom: none;
+        }
+
+        .rewards-date {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .logout-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .logout-link:hover {
+            color: #dc2626;
+        }
+
+        .support-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.25rem;
+            gap: 1.5rem;
+        }
+
+        .plan-box {
+            padding: 1.5rem;
+            margin-bottom: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        @media (max-width: 640px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+
+            .tutorial-card {
+                padding: 1.5rem;
+            }
+
+            .support-box {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 1rem;
+            }
+
+            .plan-box {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="lang-switcher" style="position: absolute; top: 1rem; right: 1rem; z-index: 100;">
+        <select id="langSelect" class="form-control" style="width: auto; padding: 0.3rem 0.6rem; font-size: 0.85rem; background: rgba(255,255,255,0.8); border: 1px solid #ccc; border-radius: 4px;">
+            <option value="en">🇺🇸 English</option>
+            <option value="zh">🇨🇳 中文</option>
+            <option value="ru">🇷🇺 Русский</option>
+        </select>
+    </div>
+
+    <div class="app-layout" id="appLayout">
+
+        <!-- 左侧边栏 (Dashboard模式下显示) -->
+        <div class="sidebar" id="sidebar">
+            <div class="header" style="margin-bottom: 2rem; text-align: left; padding-left: 0.5rem;">
+                <h1 class="logo" style="justify-content: flex-start; font-size: 1.5rem;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" /></svg><span data-i18n="app_name">Brook Store</span></h1>
+            </div>
+
+            <div class="sidebar-menu">
+                <a href="#section-profile" class="sidebar-link active">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    <span data-i18n="profile">个人中心</span>
+                </a>
+                <a href="#section-subscribe" class="sidebar-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                    </svg>
+                    <span data-i18n="subscribe_link">订阅链接</span>
+                </a>
+                <a href="#section-clients" class="sidebar-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                    <span data-i18n="import_tutorial">导入教程</span>
+                </a>
+                <a href="#section-support" class="sidebar-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    <span data-i18n="support">专属客服</span>
+                </a>
+                <a href="#section-rewards" class="sidebar-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2v20"></path>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                    <span data-i18n="rewards">推广奖励</span>
+                </a>
+            </div>
+
+            <div style="margin-top: auto;">
+                <a class="logout-link" id="sidebarLogoutBtn" style="padding: 0.85rem 1rem; display: flex;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    <span data-i18n="logout">退出登录</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="container" id="appContainer">
+
+            <div class="header">
+                <h1 class="logo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" /></svg><span data-i18n="app_name">Brook Store</span></h1>
+                <div class="subtitle" id="appSubtitle"><span data-i18n="subtitle">童叟无欺的机场</span></div>
+            </div>
+
+            <!-- 登录注册区 -->
+            <div class="card" id="loginCard">
+                <h2 class="card-title"><span data-i18n="login_register">登录 / 注册</span></h2>
+
+                <div id="loginError" class="alert alert-error hidden">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <span id="loginErrorText"></span>
+                </div>
+
+                <div id="loginSuccess" class="alert alert-success hidden">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                    <span id="loginSuccessText"></span>
+                </div>
+
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="email" data-i18n="email_address">邮箱地址</label>
+                        <input type="email" id="email" class="form-control" required placeholder="name@example.com" data-i18n-placeholder="email_placeholder">
+                    </div>
+                    <div class="form-group">
+                        <label for="code" data-i18n="verification_code">验证码</label>
+                        <div class="code-row">
+                            <input type="text" id="code" class="form-control" required placeholder="4位数字验证码" data-i18n-placeholder="code_placeholder">
+                            <button type="button" id="sendCodeBtn" class="btn btn-secondary"><span data-i18n="get_code">获取验证码</span></button>
+                        </div>
+                    </div>
+                    <div class="form-group hidden" id="promoGroup">
+                        <label for="promoter_code" data-i18n="invite_code">邀请码 (可选)</label>
+                        <input type="text" id="promoter_code" class="form-control" placeholder="如果有邀请码可输入" data-i18n-placeholder="invite_placeholder">
+                    </div>
+                    <button type="submit" id="submitLoginBtn" class="btn btn-block" style="margin-top: 1.5rem;">
+                        <span data-i18n="enter_console">进入控制台</span>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+
+            <!-- 用户仪表盘 -->
+            <div class="hidden" id="dashboardCard">
+
+                <div id="section-profile" style="scroll-margin-top: 2rem;">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-label"><span data-i18n="account_email">账户邮箱</span></div>
+                            <div class="stat-value email" id="u_email">-</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label"><span data-i18n="expiration_time">到期时间</span></div>
+                            <div class="stat-value" id="u_expiredat">-</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label"><span data-i18n="monthly_traffic">本月流量</span></div>
+                            <div class="stat-value" id="u_traffic">-</div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;"><span data-i18n="reset_tip">每月1日重置</span></div>
+                        </div>
+                    </div>
+
+                    <div class="card plan-box">
+                        <div>
+                            <h3 style="font-size: 1.1rem; margin-bottom: 0.25rem;"><span data-i18n="need_more_time">需延长使用时长？</span></h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0;"><span data-i18n="plan_desc">$10 三个月，每月包含 100G 流量。</span></p>
+                        </div>
+                        <button id="buyPlanBtn" class="btn btn-success" style="flex-shrink: 0;">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="16"></line>
+                                <line x1="8" y1="12" x2="16" y2="12"></line>
+                            </svg>
+                            <span data-i18n="buy_now">立即购买套餐</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="section-subscribe" style="scroll-margin-top: 2rem;">
+                    <h3 class="section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                        </svg>
+                        <span data-i18n="exclusive_link">专属订阅链接</span>
+                    </h3>
+                    <p class="section-desc"><span data-i18n="link_desc">将此链接导入至客户端中即可获取服务器列表，请妥善保管，勿泄露给他人。</span></p>
+                    <div class="link-box-container" style="margin-bottom: 1rem;">
+                        <div class="link-box" id="u_sublink"></div>
+                        <button class="copy-btn" id="copyLinkBtn" title="复制链接" data-i18n-title="copy_link">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="section-desc" style="margin-bottom: 2rem;"><span data-i18n="personal_use_only">仅限个人使用，否则可能导致性能下降。</span></p>
+                </div>
+
+                <div id="section-clients" style="scroll-margin-top: 2rem;">
+                    <h3 class="section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        <span data-i18n="recommend_client">Brook Store 推荐使用第三方 Brook 开源客户端</span>
+                    </h3>
+                    <div class="downloads-grid">
+                        <a href="https://apps.apple.com/us/app/brook-network-tool/id1216002642" class="btn btn-secondary" target="_blank">
+                            <svg viewBox="0 0 384 512">
+                                <path fill="currentColor" d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z" />
+                            </svg>
+                            iOS
+                        </a>
+                        <a href="https://apps.apple.com/us/app/brook-network-tool/id1216002642" class="btn btn-secondary" target="_blank">
+                            <svg viewBox="0 0 384 512">
+                                <path fill="currentColor" d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z" />
+                            </svg>
+                            macOS
+                        </a>
+                        <a href="https://github.com/txthinking/brook/releases/latest/download/Brook.apk" class="btn btn-secondary" target="_blank">
+                            <svg viewBox="0 0 576 512">
+                                <path fill="currentColor" d="M420.55,301.93a24,24,0,1,1,24-24,24,24,0,0,1-24,24m-265.1,0a24,24,0,1,1,24-24,24,24,0,0,1-24,24m273.7-144.48,47.94-83a10,10,0,1,0-17.27-10h0l-48.54,84.07a301.25,301.25,0,0,0-246.56,0L116.18,64.45a10,10,0,1,0-17.27,10h0l48,83.24C56.12,207.39,0,295.6,0,400H576c0-104.4-56.12-192.61-146.85-242.55" />
+                            </svg>
+                            Android
+                        </a>
+                        <a href="https://github.com/txthinking/brook/releases/latest/download/Brook.msix" class="btn btn-secondary" target="_blank">
+                            <svg viewBox="0 0 448 512">
+                                <path fill="currentColor" d="M0 93.7l183.6-25.3v177.4H0V93.7zm0 324.6l183.6 25.3V268.4H0v149.9zm203.8 28L448 480V268.4H203.8v177.9zm0-380.6v180.1H448V32L203.8 65.7z" />
+                            </svg>
+                            Windows
+                        </a>
+                        <a href="https://github.com/txthinking/brook/releases/latest/download/Brook.bin" class="btn btn-secondary" target="_blank">
+                            <svg viewBox="0 0 448 512">
+                                <path fill="currentColor"
+                                    d="M220.8 123.3c1 .5 1.8 1.7 3 1.7 1.1 0 2.8-.4 2.9-1.5.2-1.4-1.9-2.3-3.2-2.9-1.7-.7-3.9-1-5.5-.1-.4.2-.8.7-.6 1.1.3 1.3 2.3 1.1 3.4 1.7zm-21.9 1.7c1.2 0 2-1.2 3-1.7 1.1-.6 3.1-.4 3.5-1.6.2-.4-.2-.9-.6-1.1-1.6-.9-3.8-.6-5.5.1-1.3.6-3.4 1.5-3.2 2.9.1 1 1.8 1.5 2.8 1.4zM420 403.8c-3.6-4-5.3-11.6-7.2-19.7-1.8-8.1-3.9-16.8-10.5-22.4-1.3-1.1-2.6-2.1-4-2.9-1.3-.8-2.7-1.5-4.1-2 9.2-27.3 5.6-54.5-3.7-79.1-11.4-30.1-31.3-56.4-46.5-74.4-17.1-21.5-33.7-41.9-33.4-72C311.1 85.4 315.7.1 234.8 0 132.4-.2 158 103.4 156.9 135.2c-1.7 23.4-6.4 41.8-22.5 64.7-18.9 22.7-45.5 58.6-58.5 96.7-9.7 28.8-8.7 55.9 3.7 82.1-1.5.5-3 1.2-4.2 2-1.2.7-2.4 1.5-3.5 2.6-6.2 5.4-8.2 14-10 22-1.8 8.1-3.6 15.6-7.1 19.6-9.6 11.1-38.4 11.4-44.5 11.5-5.3.1-10 4-10.3 9.3-.3 5.5 3.8 10.1 9.3 10.3 7.8.2 42.1.8 61.1-10.9 2-1.2 3.6-2.8 4.7-4.6 34.3 14 74 24.1 118 24.1 48 0 91.5-11.4 128.5-27.6 1.4 2.3 3.5 4.1 6.1 5.4 18.5 12.3 52.8 10.5 59.8 10.3 5.5-.2 9.7-4.9 9.4-10.3-.3-5.3-4.9-9.4-10.3-9.1-7 .2-36.8.5-46.7-10.6zM263.3 108.2c1.7-1.9 2.1-5.1.7-7.7-1.5-2.8-5-3.9-7.8-2.6-2.5 1.2-3.8 4.2-3 7 .7 2.5 3.4 4.1 5.9 4 1.5 0 2.9-.5 4.2-1.4v.7zm-69.5-6.3c-2.8-1.3-6.3-.2-7.8 2.6-1.4 2.6-1 5.8.7 7.7 1.2.9 2.7 1.4 4.2 1.4 2.5.1 5.2-1.5 5.9-4 .8-2.8-.5-5.8-3-7zm69.9 29.5c-4.4 22.8-18.7 41.5-29 48.7-1.7 1.2-3.4 2.1-5 2.8-.9.4-1.7.7-2.6 1-1 .3-1.9.5-2.9.7-.8.1-1.6.2-2.3.2h-2c-.8 0-1.5-.1-2.3-.2-.9-.1-1.8-.4-2.8-.6-1-.3-1.9-.6-2.8-1-1.6-.7-3.3-1.6-5-2.8-10.3-7.2-24.6-26-29-48.7-1.1-5.7-1.6-11.4-1.3-17.1.3-5.2 2-10 5.1-14 3.7-4.7 9-7.8 15-8.8 3.5-.6 7-.6 10.6-.2 3.1.3 6.1 1.2 8.7 2.7 2.3-1.3 5-2.2 7.7-2.6 3.6-.5 7.2-.6 10.7 0 6.1 1 11.4 4 15 8.8 3.1 4 4.8 8.8 5.1 14 .3 5.7-.3 11.4-1.3 17.1zM195.9 270.7c0-21.7-14.7-39.2-32.8-39.2-18.1 0-32.8 17.5-32.8 39.2 0 21.7 14.7 39.2 32.8 39.2 18.1 0 32.8-17.5 32.8-39.2zm85.8 0c0-21.7-14.7-39.2-32.8-39.2-18.1 0-32.8 17.5-32.8 39.2 0 21.7 14.7 39.2 32.8 39.2 18.1 0 32.8-17.5 32.8-39.2z" />
+                            </svg>
+                            Linux
+                        </a>
+                    </div>
+
+                    <div class="tutorial-card">
+                        <h3 class="section-title" style="margin-bottom: 1.5rem;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="16" x2="12" y2="12"></line>
+                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                            </svg>
+                            <span data-i18n="import_tutorial">导入教程</span>
+                        </h3>
+                        <ol>
+                            <li><span data-i18n="step_1">打开已经安装好的 <strong>Brook</strong> 客户端。</span></li>
+                            <li><span data-i18n="step_2">使用任意邮箱登录（<strong>注意：此邮箱与本系统账号无关</strong>）。</span></li>
+                            <li><span data-i18n="step_3">在 Brook 客户端首页，点击右上角左数第一个 <strong>+</strong> 按钮。</span></li>
+                            <li><span data-i18n="step_4">将上方您的专属 <strong>订阅链接</strong> 完整粘贴到输入框中。</span></li>
+                            <li><span data-i18n="step_5">点击 <strong>导入</strong> 按钮完成配置。</span></li>
+                        </ol>
+                        <div class="tutorial-tip">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                            </svg>
+                            <div><strong data-i18n="tip_title">温馨提示：</strong> <span data-i18n="tip_desc">Brook 客户端会定期自动更新服务器列表，为了获得最佳体验，建议您每次使用前都可以手动点击一次导入，以获取最新最快的服务器节点。</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="section-support" style="scroll-margin-top: 2rem;">
+                    <h3 class="section-title" style="margin-top: 2.5rem;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                        <span data-i18n="support">专属客服</span>
+                    </h3>
+                    <div class="link-box-container" style="margin-bottom: 2rem;">
+                        <div class="link-box support-box">
+                            <span style="color: #dc2626; font-weight: 500; flex: 1; min-width: 0;" data-i18n="support_desc">如有问题 不要联系 Brook 客户端里的客服，请联系这里的唯一专属客服：{support}</span>
+                            <a href="#" id="supportBtnHref" target="_blank" class="btn btn-secondary" style="padding: 0.5rem 1rem; width: auto; flex-shrink: 0;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M22 2L11 13"></path>
+                                    <path d="M22 2L15 22L11 13L2 9L22 2z"></path>
+                                </svg><span data-i18n="contact_support">联系客服</span></a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- <span data-i18n="rewards">推广奖励</span>区 -->
+                <div id="section-rewards" style="scroll-margin-top: 2rem;">
+                    <h3 class="section-title" style="margin-top: 2.5rem;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 2v20"></path>
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        </svg>
+                        <span data-i18n="rewards">推广奖励</span>
+                    </h3>
+                    <p class="section-desc"><span data-i18n="rewards_desc">被邀请用户每充值一次你都可以获得 10 天时长。</span></p>
+                    <div class="link-box-container" style="margin-bottom: 1rem;">
+                        <div class="link-box" id="u_promolink"></div>
+                        <button class="copy-btn" id="copyPromoBtn" title="复制链接" data-i18n-title="copy_link">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div id="rewardsContainer" class="hidden" style="background: rgba(255, 255, 255, 0.5); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem 1.25rem;">
+                        <h4 style="font-size: 0.95rem; margin-bottom: 0.5rem; color: var(--text);"><span data-i18n="reward_records">奖励记录</span></h4>
+                        <ul class="rewards-list" id="rewardsList"></ul>
+                    </div>
+                </div>
+
+                <div class="footer hide-on-desktop">
+                    <span class="logout-link" id="logoutBtn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                        <span data-i18n="secure_logout">安全退出账号</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+
+const locales = {
+    en: {
+        title: (window.APP_CONFIG?.name_en || ''),
+        app_name: window.APP_CONFIG?.name_en || '',
+        subtitle: 'Secure and stable network service',
+        dashboard_subtitle: 'provides premium network services',
+        profile: 'Profile',
+        subscribe_link: 'Subscribe Link',
+        import_tutorial: 'Import Tutorial',
+        support: 'Support',
+        rewards: 'Rewards',
+        logout: 'Logout',
+        secure_logout: 'Secure Logout',
+        login_register: 'Login / Register',
+        email_address: 'Email Address',
+        email_placeholder: 'name@example.com',
+        verification_code: 'Verification Code',
+        code_placeholder: '4-digit code',
+        get_code: 'Get Code',
+        invite_code: 'Invite Code (Optional)',
+        invite_placeholder: 'Enter invite code if you have one',
+        enter_console: 'Enter Console',
+        account_email: 'Account Email',
+        expiration_time: 'Expiration Time',
+        monthly_traffic: 'Monthly Traffic',
+        reset_tip: 'Resets on the 1st of every month',
+        need_more_time: 'Need more time?',
+        plan_desc: '$10 for 3 months, includes 100GB traffic per month.',
+        buy_now: 'Buy Now',
+        exclusive_link: 'Exclusive Subscribe Link',
+        link_desc: 'Import this link into the client to get the server list. Please keep it safe and do not share it with others.',
+        personal_use_only: 'For personal use only, otherwise it may cause performance degradation.',
+        copy_link: 'Copy Link',
+        recommend_client: '{app_name} recommends using the third-party open-source Brook client',
+        step_1: 'Open the installed <strong>Brook</strong> client.',
+        step_2: 'Log in with any email (<strong>Note: This email is independent of this account</strong>).',
+        step_3: 'On the Brook client homepage, click the first <strong>+</strong> button from the left in the top right corner.',
+        step_4: 'Paste your complete <strong>Subscribe Link</strong> from above into the input box.',
+        step_5: 'Click the <strong>Import</strong> button to finish configuration.',
+        tip_title: 'Tip:',
+        tip_desc: 'The Brook client automatically updates the server list periodically. For the best experience, we recommend manually clicking import before each use to get the latest and fastest server nodes.',
+        exclusive_support: 'Exclusive Support',
+        support_desc: 'If you have any questions, do not contact the support in the Brook client. Please contact our exclusive support here: {support}',
+        contact_support: 'Contact Support',
+        promo_rewards: 'Promotion Rewards',
+        rewards_desc: 'You will get 10 days of extra time for every recharge by your invited users.',
+        reward_records: 'Reward Records',
+        no_rewards: 'No reward records yet. Go invite some friends!',
+        got_days: 'Got 10 days',
+        err_email: 'Please enter a valid email address',
+        sending: 'Sending...',
+        sent_code: 'Verification code sent to your email, please check',
+        retry_in: 'Retry in {s}s',
+        err_network: 'Network error, please try again later',
+        err_code: 'Please get and enter the verification code first',
+        logging_in: 'Logging in...',
+        redirecting: 'Redirecting...',
+        err_pay_link: 'Failed to get payment link',
+        err_prefix: 'Error: ',
+        blocked: 'Blocked',
+        expired: 'Expired',
+    },
+    zh: {
+        title: [window.APP_CONFIG?.name_zh, window.APP_CONFIG?.name_en].filter(Boolean).join(' '),
+        app_name: window.APP_CONFIG?.name_zh || '',
+        subtitle: '安全稳定的网络服务',
+        dashboard_subtitle: '为您提供全面的网络服务',
+        profile: '个人中心',
+        subscribe_link: '订阅链接',
+        import_tutorial: '导入教程',
+        support: '专属客服',
+        rewards: '推广奖励',
+        logout: '退出登录',
+        secure_logout: '安全退出账号',
+        login_register: '登录 / 注册',
+        email_address: '邮箱地址',
+        email_placeholder: 'name@example.com',
+        verification_code: '验证码',
+        code_placeholder: '4位数字验证码',
+        get_code: '获取验证码',
+        invite_code: '邀请码 (可选)',
+        invite_placeholder: '如果有邀请码可输入',
+        enter_console: '进入控制台',
+        account_email: '账户邮箱',
+        expiration_time: '到期时间',
+        monthly_traffic: '本月流量',
+        reset_tip: '每月1日重置',
+        need_more_time: '需延长使用时长？',
+        plan_desc: '$10 三个月，每月包含 100G 流量。',
+        buy_now: '立即购买套餐',
+        exclusive_link: '专属订阅链接',
+        link_desc: '将此链接导入至客户端中即可获取服务器列表，请妥善保管，勿泄露给他人。',
+        personal_use_only: '仅限个人使用，否则可能导致性能下降。',
+        copy_link: '复制链接',
+        recommend_client: '{app_name} 推荐使用第三方 Brook 开源客户端',
+        step_1: '打开已经安装好的 <strong>Brook</strong> 客户端。',
+        step_2: '使用任意邮箱登录（<strong>注意：此邮箱与本系统账号无关</strong>）。',
+        step_3: '在 Brook 客户端首页，点击右上角左数第一个 <strong>+</strong> 按钮。',
+        step_4: '将上方您的专属 <strong>订阅链接</strong> 完整粘贴到输入框中。',
+        step_5: '点击 <strong>导入</strong> 按钮完成配置。',
+        tip_title: '温馨提示：',
+        tip_desc: 'Brook 客户端会定期自动更新服务器列表，为了获得最佳体验，建议您每次使用前都可以手动点击一次导入，以获取最新最快的服务器节点。',
+        exclusive_support: '专属客服',
+        support_desc: '如有问题不要联系 Brook 客户端里的客服，请联系这里的唯一专属客服：{support}',
+        contact_support: '联系客服',
+        promo_rewards: '推广奖励',
+        rewards_desc: '被邀请用户每充值一次你都可以获得 10 天时长。',
+        reward_records: '奖励记录',
+        no_rewards: '暂无奖励记录，快去邀请好友吧！',
+        got_days: '获得 10 天时长',
+        err_email: '请先输入有效的邮箱地址',
+        sending: '发送中...',
+        sent_code: '验证码已发送至您的邮箱，请查收',
+        retry_in: '{s}s 后重试',
+        err_network: '网络错误，请稍后重试',
+        err_code: '请先获取并填写验证码',
+        logging_in: '登录中...',
+        redirecting: '正在跳转...',
+        err_pay_link: '获取支付链接失败',
+        err_prefix: '错误: ',
+        blocked: '已封禁',
+        expired: '已过期',
+    },
+    ru: {
+        title: window.APP_CONFIG?.name_en || '',
+        app_name: window.APP_CONFIG?.name_en || '',
+        subtitle: 'Безопасный и стабильный сетевой сервис',
+        dashboard_subtitle: 'предоставляет качественные сетевые услуги',
+        profile: 'Профиль',
+        subscribe_link: 'Ссылка на подписку',
+        import_tutorial: 'Руководство по импорту',
+        support: 'Поддержка',
+        rewards: 'Награды',
+        logout: 'Выйти',
+        secure_logout: 'Безопасный выход',
+        login_register: 'Вход / Регистрация',
+        email_address: 'Email',
+        email_placeholder: 'name@example.com',
+        verification_code: 'Код подтверждения',
+        code_placeholder: '4-значный код',
+        get_code: 'Получить код',
+        invite_code: 'Код приглашения (необязательно)',
+        invite_placeholder: 'Введите код, если он у вас есть',
+        enter_console: 'Войти в консоль',
+        account_email: 'Email аккаунта',
+        expiration_time: 'Время истечения',
+        monthly_traffic: 'Трафик за месяц',
+        reset_tip: 'Сброс 1-го числа каждого месяца',
+        need_more_time: 'Нужно продлить время?',
+        plan_desc: '$10 за 3 месяца, включает 100 ГБ трафика в месяц.',
+        buy_now: 'Купить сейчас',
+        exclusive_link: 'Эксклюзивная ссылка на подписку',
+        link_desc: 'Импортируйте эту ссылку в клиент, чтобы получить список серверов. Храните её в безопасности и не передавайте другим.',
+        personal_use_only: 'Только для личного использования, иначе это может привести к снижению производительности.',
+        copy_link: 'Копировать ссылку',
+        recommend_client: '{app_name} рекомендует использовать сторонний клиент Brook',
+        step_1: 'Откройте установленный клиент <strong>Brook</strong>.',
+        step_2: 'Войдите с любым email (<strong>Примечание: этот email не связан с данным аккаунтом</strong>).',
+        step_3: 'На главной странице клиента Brook нажмите первую кнопку <strong>+</strong> слева в правом верхнем углу.',
+        step_4: 'Вставьте вашу полную <strong>ссылку на подписку</strong> сверху в поле ввода.',
+        step_5: 'Нажмите кнопку <strong>Импорт</strong> для завершения настройки.',
+        tip_title: 'Подсказка:',
+        tip_desc: 'Клиент Brook автоматически обновляет список серверов. Мы рекомендуем вручную нажимать импорт перед каждым использованием.',
+        exclusive_support: 'Эксклюзивная поддержка',
+        support_desc: 'Если у вас есть вопросы, не обращайтесь в службу поддержки внутри клиента Brook. Свяжитесь с нашей эксклюзивной поддержкой здесь: {support}',
+        contact_support: 'Связаться с поддержкой',
+        promo_rewards: 'Награды за продвижение',
+        rewards_desc: 'Вы получите 10 дней дополнительного времени за каждое пополнение счета вашими приглашенными пользователями.',
+        reward_records: 'История наград',
+        no_rewards: 'Пока нет записей о наградах. Идите и пригласите друзей!',
+        got_days: 'Получено 10 дней',
+        err_email: 'Пожалуйста, введите действительный адрес email',
+        sending: 'Отправка...',
+        sent_code: 'Код подтверждения отправлен на ваш email, пожалуйста, проверьте',
+        retry_in: 'Повтор через {s}с',
+        err_network: 'Ошибка сети, пожалуйста, попробуйте позже',
+        err_code: 'Пожалуйста, сначала получите и введите код подтверждения',
+        logging_in: 'Вход...',
+        redirecting: 'Перенаправление...',
+        err_pay_link: 'Не удалось получить ссылку на оплату',
+        err_prefix: 'Ошибка: ',
+        blocked: 'Заблокирован',
+        expired: 'Истекший',
+    }
+};
+
+function getBrowserLang() {
+    const l = navigator.language || navigator.userLanguage;
+    if (l.startsWith('zh')) return 'zh';
+    if (l.startsWith('ru')) return 'ru';
+    return 'en';
+}
+
+let currentLang = localStorage.getItem('brook_lang') || getBrowserLang();
+if (!locales[currentLang]) currentLang = 'en';
+
+function setLanguage(lang) {
+    if (!locales[lang]) lang = 'en';
+    currentLang = lang;
+    localStorage.setItem('brook_lang', lang);
+    $('langSelect').value = lang;
+    
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (locales[lang][key]) {
+            let text = locales[lang][key];
+            if (text.includes('{app_name}')) {
+                text = text.replace('{app_name}', locales[lang].app_name || '');
+            }
+            if (text.includes('{support}')) {
+                text = text.replace('{support}', window.APP_CONFIG?.support || '');
+            }
+            el.innerHTML = text;
+        }
+    });
+
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (locales[lang][key]) {
+            el.setAttribute('placeholder', locales[lang][key]);
+        }
+    });
+
+    document.querySelectorAll('[data-i18n-title]').forEach(el => {
+        const key = el.getAttribute('data-i18n-title');
+        if (locales[lang][key]) {
+            el.setAttribute('title', locales[lang][key]);
+        }
+    });
+
+    // Subtitle logic
+    const subtitleEl = $('appSubtitle');
+    if (subtitleEl) {
+        if ($('appContainer').classList.contains('dashboard-mode')) {
+            subtitleEl.innerHTML = `<span data-i18n="app_name">${locales[lang].app_name}</span> <span data-i18n="dashboard_subtitle">${locales[lang].dashboard_subtitle}</span>`;
+        } else {
+            subtitleEl.innerHTML = locales[lang].subtitle;
+        }
+    }
+}
+function t(key) {
+    return locales[currentLang][key] || key;
+}
+
+        const $ = id => document.getElementById(id);
+
+        let currentCodetoken = '';
+        let currentUserToken = localStorage.getItem('brook_token');
+
+        function showError(msg) {
+            $('loginSuccess').classList.add('hidden');
+            $('loginErrorText').textContent = msg;
+            $('loginError').classList.remove('hidden');
+        }
+
+        function showSuccess(msg) {
+            $('loginError').classList.add('hidden');
+            $('loginSuccessText').textContent = msg;
+            $('loginSuccess').classList.remove('hidden');
+        }
+
+        function hideAlerts() {
+            $('loginError').classList.add('hidden');
+            $('loginSuccess').classList.add('hidden');
+        }
+
+        function formatTraffic(mb) {
+            const num = Number(mb) || 0;
+            const gb = num / 1024;
+            return gb.toFixed(2) + ' G / 100G';
+        }
+
+        function formatDate(timestamp) {
+            if (timestamp === -1) return `<span data-i18n="blocked">${t('blocked')}</span>`;
+            if (timestamp < Date.now() / 1000) return `<span data-i18n="expired">${t('expired')}</span>`;
+            const d = new Date(timestamp * 1000);
+            return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+        }
+
+        async function fetchUser() {
+            if (!currentUserToken) return false;
+            try {
+                const res = await fetch('/api/user?token=' + encodeURIComponent(currentUserToken));
+                if (res.status === 200) {
+                    const data = await res.json();
+                    return data;
+                }
+            } catch (e) { }
+            return false;
+        }
+
+        async function init() {
+            if (window.APP_CONFIG?.support) {
+                const support = window.APP_CONFIG.support;
+                const supportLink = support.includes('@') && !support.startsWith('http') ? 'mailto:' + support : support;
+                $('supportBtnHref').href = supportLink;
+            } else {
+                if ($('supportBtnHref')) $('supportBtnHref').style.display = 'none';
+            }
+            const urlParams = new URLSearchParams(window.location.search);
+            const codeParam = urlParams.get('code');
+            if (codeParam) {
+                $('promoter_code').value = codeParam;
+                $('promoter_code').disabled = true;
+                $('promoGroup').classList.remove('hidden');
+            }
+
+            if (currentUserToken) {
+                const user = await fetchUser();
+                if (user) {
+                    showDashboard(user);
+                    return;
+                } else {
+                    localStorage.removeItem('brook_token');
+                    currentUserToken = null;
+                }
+            }
+            $('loginCard').classList.remove('hidden');
+            $('appContainer').classList.remove('dashboard-mode');
+            $('appLayout').classList.remove('dashboard-mode');
+            $('appSubtitle').innerHTML = t('subtitle');
+        }
+
+        function showDashboard(user) {
+            $('loginCard').classList.add('hidden');
+            $('dashboardCard').classList.remove('hidden');
+            $('appContainer').classList.add('dashboard-mode');
+            $('appLayout').classList.add('dashboard-mode');
+            $('appSubtitle').innerHTML = `<span data-i18n="app_name">${locales[currentLang].app_name}</span> <span data-i18n="dashboard_subtitle">${locales[currentLang].dashboard_subtitle}</span>`;
+
+            $('u_email').textContent = user.email;
+            $('u_expiredat').innerHTML = formatDate(user.expiredat);
+            $('u_traffic').textContent = formatTraffic(user.traffic);
+
+            const subLink = window.location.origin + '/api/servers?token=' + currentUserToken;
+            $('u_sublink').textContent = subLink;
+
+            const promoCode = user.promocode
+            const promoLink = window.location.origin + '/?code=' + promoCode;
+            $('u_promolink').textContent = promoLink;
+
+            $('rewardsContainer').classList.remove('hidden');
+            if (user.rewards && user.rewards.length > 0) {
+                $('rewardsList').innerHTML = user.rewards.map(r => `<li><span data-i18n="got_days">${t("got_days")}</span><span class="rewards-date">${formatDate(r.createdat)}</span></li>`).join('');
+            } else {
+                $('rewardsList').innerHTML = `<li style="justify-content: center; color: var(--text-muted); border-bottom: none;"><span data-i18n="no_rewards">${t('no_rewards')}</span></li>`;
+            }
+        }
+
+        $('sendCodeBtn').addEventListener('click', async () => {
+            const email = $('email').value.trim();
+            if (!email) {
+                showError(t('err_email'));
+                return;
+            }
+            hideAlerts();
+
+            $('sendCodeBtn').disabled = true;
+            $('sendCodeBtn').innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite;"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg> ' + t('sending');
+
+            try {
+                const res = await fetch('/api/signin-send-code', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({email})
+                });
+
+                if (res.status === 200) {
+                    const data = await res.json();
+                    currentCodetoken = data.codetoken;
+                    $('promoGroup').classList.remove('hidden');
+                    showSuccess(t('sent_code'));
+
+                    let countdown = 60;
+                    $('sendCodeBtn').textContent = `${t("retry_in").replace("{s}", countdown)}`;
+
+                    const timer = setInterval(() => {
+                        countdown--;
+                        if (countdown <= 0) {
+                            clearInterval(timer);
+                            $('sendCodeBtn').disabled = false;
+                            $('sendCodeBtn').textContent = t('get_code');
+                        } else {
+                            $('sendCodeBtn').textContent = `${t("retry_in").replace("{s}", countdown)}`;
+                        }
+                    }, 1000);
+                } else {
+                    const err = await res.text();
+                    showError(err);
+                    $('sendCodeBtn').disabled = false;
+                    $('sendCodeBtn').textContent = t('get_code');
+                }
+            } catch (e) {
+                showError(t('err_network'));
+                $('sendCodeBtn').disabled = false;
+                $('sendCodeBtn').textContent = t('get_code');
+            }
+        });
+
+        $('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = $('email').value.trim();
+            const code = $('code').value.trim();
+            const promoter_code = $('promoter_code').value.trim();
+
+            if (!currentCodetoken) {
+                showError(t('err_code'));
+                return;
+            }
+
+            hideAlerts();
+            $('submitLoginBtn').disabled = true;
+            $('submitLoginBtn').innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite;"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg> ' + t('logging_in');
+
+            try {
+                const res = await fetch('/api/signin', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        email,
+                        codetoken: currentCodetoken,
+                        code,
+                        promoter_code
+                    })
+                });
+
+                if (res.status === 200) {
+                    const data = await res.json();
+                    currentUserToken = data.token;
+                    localStorage.setItem('brook_token', currentUserToken);
+
+                    const user = await fetchUser();
+                    if (user) {
+                        showDashboard(user);
+                    }
+                } else {
+                    const err = await res.text();
+                    showError(err);
+                }
+            } catch (e) {
+                showError(t('err_network'));
+            } finally {
+                $('submitLoginBtn').disabled = false;
+                $('submitLoginBtn').innerHTML = `<span data-i18n="enter_console">${t('enter_console')}</span> <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>`;
+            }
+        });
+
+        $('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('brook_token');
+            currentUserToken = null;
+            $('dashboardCard').classList.add('hidden');
+            $('loginCard').classList.remove('hidden');
+            $('appContainer').classList.remove('dashboard-mode');
+            $('appLayout').classList.remove('dashboard-mode');
+            $('email').value = '';
+            $('code').value = '';
+            $('promoter_code').value = '';
+            $('promoGroup').classList.add('hidden');
+            currentCodetoken = '';
+            hideAlerts();
+        });
+
+        $('buyPlanBtn').addEventListener('click', async () => {
+            if (!currentUserToken) return;
+            const originalHtml = $('buyPlanBtn').innerHTML;
+            $('buyPlanBtn').disabled = true;
+            $('buyPlanBtn').innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite;"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg> ' + t('redirecting');
+
+            try {
+                const res = await fetch('/api/payment', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({token: currentUserToken})
+                });
+                if (res.status === 200) {
+                    const data = await res.json();
+                    if (data.link) {
+                        window.open(data.link, '_blank');
+                    } else {
+                        alert(t('err_pay_link'));
+                    }
+                } else {
+                    const err = await res.text();
+                    alert(t('err_prefix') + err);
+                }
+            } catch (e) {
+                alert('网络错误，请稍后重试');
+            } finally {
+                $('buyPlanBtn').disabled = false;
+                $('buyPlanBtn').innerHTML = originalHtml;
+            }
+        });
+
+        // Sidebar logic
+        $('sidebarLogoutBtn').addEventListener('click', () => {
+            $('logoutBtn').click();
+        });
+
+        const sidebarLinks = document.querySelectorAll('.sidebar-link');
+        sidebarLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                sidebarLinks.forEach(l => l.classList.remove('active'));
+                e.currentTarget.classList.add('active');
+
+                const targetId = e.currentTarget.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    e.preventDefault();
+                    targetElement.scrollIntoView({behavior: 'smooth'});
+                    history.pushState(null, null, '#' + targetId);
+                }
+            });
+        });
+
+        window.addEventListener('scroll', () => {
+            if (!$('appContainer').classList.contains('dashboard-mode')) return;
+
+            let current = '';
+            const sections = ['section-profile', 'section-subscribe', 'section-clients', 'section-support', 'section-rewards'];
+
+            for (const sectionId of sections) {
+                const section = document.getElementById(sectionId);
+                if (section) {
+                    const sectionTop = section.offsetTop;
+                    if (window.scrollY >= sectionTop - 150) {
+                        current = sectionId;
+                    }
+                }
+            }
+
+            if (current) {
+                sidebarLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === `#${current}`) {
+                        link.classList.add('active');
+                    }
+                });
+            }
+        });
+
+        $('copyLinkBtn').addEventListener('click', () => {
+            const link = $('u_sublink').textContent;
+            navigator.clipboard.writeText(link).then(() => {
+                const originalHtml = $('copyLinkBtn').innerHTML;
+                $('copyLinkBtn').innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+                setTimeout(() => {
+                    $('copyLinkBtn').innerHTML = originalHtml;
+                }, 2000);
+            });
+        });
+
+        $('copyPromoBtn').addEventListener('click', () => {
+            const link = $('u_promolink').textContent;
+            navigator.clipboard.writeText(link).then(() => {
+                const originalHtml = $('copyPromoBtn').innerHTML;
+                $('copyPromoBtn').innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+                setTimeout(() => {
+                    $('copyPromoBtn').innerHTML = originalHtml;
+                }, 2000);
+            });
+        });
+
+        // Add spinner keyframes
+        const style = document.createElement('style');
+        style.innerHTML = `@keyframes spin { 100% { transform: rotate(360deg); } }`;
+        document.head.appendChild(style);
+
+        $('langSelect').addEventListener('change', (e) => setLanguage(e.target.value));
+        setLanguage(currentLang);
+        init();
+    </script>
+</body>
+
+</html>

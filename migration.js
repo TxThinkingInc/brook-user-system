@@ -1,107 +1,49 @@
-import crypto from 'node:crypto';
-import lib from './lib/lib.js'
+import helper from './helper.js'
 
-var migration = function(sqlite) {
-    var m = lib.migrate(sqlite)
-    m('create user table', `
-create table user(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    uuid text not null UNIQUE,
-    username text not null UNIQUE,
-    password text not null,
-    expired_at INTEGER not null,
-    traffic_max INTEGER not null,
-    traffic_now INTEGER not null,
-    created_at INTEGER not null 
-)
-`)
-    m('create brook table', `
-create table brook(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    link text not null UNIQUE,
-    created_at INTEGER not null 
-)
-`)
-    m('create task table', `
-create table task(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    server text not null,
-    user text not null,
-    password text not null,
-    sshkey text not null,
-    serverlog_path text not null,
-    pid_path text not null,
-    created_at INTEGER not null 
-)
-`)
-    m('create setting table', `
-create table setting(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    k text not null UNIQUE,
-    v text not null
-)
-`)
-    var uuid = crypto.randomUUID().replaceAll('-', '')
-    m('init user api path setting', `
-insert into setting(k, v) values('user_api_path', '${uuid}')
-`)
-    m('init adminuser setting', `
-insert into setting(k, v) values('adminuser', 'brook')
-`)
-    m('init adminpassword setting', `
-insert into setting(k, v) values('adminpassword', 'brook')
-`)
-    m('init site name setting', `
-insert into setting(k, v) values('site_name', 'Site Name')
-`)
-    m('init signup setting', `
-insert into setting(k, v) values('signup', 'true')
-`)
-    m('init contact setting', `
-insert into setting(k, v) values('contact', 'https://t.me/xxx')
-`)
-    m('init hidden import for browser setting', `
-insert into setting(k, v) values('import_dislike_browser', 'false')
-`)
-    m('init site description setting', `
-insert into setting(k, v) values('site_description', 'Site Description')
-`)
-    m('init reCAPTCHAKey setting', `
-insert into setting(k, v) values('reCAPTCHAKey', '')
-`)
-    m('init reCAPTCHASecret setting', `
-insert into setting(k, v) values('reCAPTCHASecret', '')
-`)
-    m('create product table', `
-create table product(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name text not null,
-    pay_url text not null
-)
-`)
-    m('init product 1', `
-insert into product(name, pay_url) values('$3.5 for month (100G/month)', 'https://www.your-pay-url.com')
-`)
-    m('init product 2', `
-insert into product(name, pay_url) values('$30 for year (100G/month)', 'https://www.your-pay-url.com')
-`)
-    m('init android_download_url setting', `
-insert into setting(k, v) values('android_download_url', 'https://github.com/txthinking/brook/releases/latest/download/Brook.apk')
-`)
-    m('init windows_download_url setting', `
-insert into setting(k, v) values('windows_download_url', 'https://github.com/txthinking/brook/releases/latest/download/Brook.msix')
-`)
-    m('init linux_download_url setting', `
-insert into setting(k, v) values('linux_download_url', 'https://github.com/txthinking/brook/releases/latest/download/Brook.bin')
-`)
-    m('init ios_download_url setting', `
-insert into setting(k, v) values('ios_download_url', 'https://apps.apple.com/us/app/brook-network-tool/id1216002642')
-`)
-    m('init darwin_download_url setting', `
-insert into setting(k, v) values('darwin_download_url', 'https://apps.apple.com/us/app/brook-network-tool/id1216002642')
-`)
-    m('init readme setting', `
-insert into setting(k, v) values('readme', 'Some tutorials to teach your users how to download, install, and use the client.\n\n 1. xxx\n2. xxx\n3. xxx\n\n Markdown format')
-`)
+var migration = async function(db) {
+    await helper.migrate(db, 'create user table', `
+CREATE TABLE user (
+    id int(10) unsigned NOT NULL AUTO_INCREMENT,
+    email varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+    expiredat int(11) not null,
+    createdat int(11) not null,
+    promoter_user_id int(11) not null default 0,
+    PRIMARY KEY (id),
+    UNIQUE KEY (email),
+    KEY (createdat),
+    KEY (promoter_user_id)
+) ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    `)
+    await helper.migrate(db, 'create server table', `
+CREATE TABLE server (
+    id int(10) unsigned NOT NULL AUTO_INCREMENT,
+    hash varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+    brooklink text,
+    connectionnumber int(11) not null,
+    reportedat int(11) not null,
+    createdat int(11) not null,
+    PRIMARY KEY (id),
+    UNIQUE KEY (hash),
+    KEY(connectionnumber),
+    KEY(reportedat)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    `)
+    await helper.migrate(db, 'create payment table', `
+CREATE TABLE payment (
+    id int(10) unsigned NOT NULL AUTO_INCREMENT,
+    user_id int(11) not null,
+    method varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+    transactionid varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+    product varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+    amount int(11) not null,
+    status int(11) not null, -- 1 unpaid 2 paid 3 refund
+    updatedat int(11) not null,
+    createdat int(11) not null,
+    promoter_user_id int(11) not null default 0,
+    PRIMARY KEY (id),
+    KEY(user_id),
+    KEY(promoter_user_id, status)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    `)
 }
 export default migration;

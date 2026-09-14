@@ -1,0 +1,49 @@
+{
+  "lockfileVersion": 1,
+  "configVersion": 1,
+  "workspaces": {
+    "": {
+      "name": "brook-store",
+      "dependencies": {
+        "commander": "^15.0.0",
+        "dotenv": "^17.4.2",
+        "ip6": "^0.2.13",
+        "lib": "github:txthinking/bash",
+        "nodemailer": "^9.1.0",
+        "rate-limiter-flexible": "^11.2.0",
+        "zhi": "github:txthinkinginc/zhi.js",
+      },
+      "devDependencies": {
+        "@types/bun": "latest",
+      },
+      "peerDependencies": {
+        "typescript": "^5",
+      },
+    },
+  },
+  "packages": {
+    "@types/bun": ["@types/bun@1.4.0", "", { "dependencies": { "bun-types": "1.4.0" } }, "sha512-K+lZULY23vRgK/CfTjFIV+tyifaNdSMlPh9j+6mQ/cLfpOznLyAuzgV/JQysyECpkBQLVMSyvjlr2fBUSA9wFQ=="],
+
+    "@types/node": ["@types/node@26.4.0", "", { "dependencies": { "undici-types": "~8.3.0" } }, "sha512-faiGnoIrLH/V8cibOMEAZ8pMw6oXqSukl29ra4mN8GdaB2ZewzeaLj+INpV5N+Z1eKWzY+IzaIZH2EIR6YZRNQ=="],
+
+    "bun-types": ["bun-types@1.4.0", "", { "dependencies": { "@types/node": "*" } }, "sha512-iIKw23BspnQQYd3prITOBxeUsxBHnwzX6YJfGMuNOZzeNcMmVqzIIVGRm1l69ogaPQmb4wB6BN8mA5bE9YuC5Q=="],
+
+    "commander": ["commander@15.0.0", "", {}, "sha512-z67u4ZhzCL/Tydu1lJARtEZYWbWaN7oYLHbsuzocr6y4N6WZAagG3RQ4FW61V1/0+jImpj293XfrcYnd1qxtPg=="],
+
+    "dotenv": ["dotenv@17.4.2", "", {}, "sha512-nI4U3TottKAcAD9LLud4Cb7b2QztQMUEfHbvhTH09bqXTxnSie8WnjPALV/WMCrJZ6UV/qHJ6L03OqO3LcdYZw=="],
+
+    "ip6": ["ip6@0.2.13", "", { "bin": { "ip6": "ip6-cli.js" } }, "sha512-Q0LtzYkknxpieAmlrKgB/R4uTpa9Ej3tpdzPSRydcMaonN96g97b+WsM2LMvUqXwoFUnpzawsQppdcR0LbPujQ=="],
+
+    "lib": ["lib@github:txthinking/bash#d0edd47", { "peerDependencies": { "typescript": "^5" } }, "txthinking-bash-d0edd47", "sha512-blvbItQnmkz/mByotk6/WQg04soz3sf27cTtsqyjxEddk2BnP1qSJfnqEX+cUvjjCGY23NEP89sZUklP1AJPYQ=="],
+
+    "nodemailer": ["nodemailer@9.1.0", "", {}, "sha512-xj1Ri5Sau3qpPffHJwi2bY0oWVVWYq62Ph17l+2v1xXpxjqTls3YPc3L8dub9mcJpxj+1ucNnuYVqLlgh4pmDA=="],
+
+    "rate-limiter-flexible": ["rate-limiter-flexible@11.2.0", "", {}, "sha512-L0eIK+BmFMi6NcvmtEg7RSswOFKi9MMD5RhBIypFfOve+G6Jl1Xbb8qEHgK3uRzNtkOFYF0L9f7P4rSf2PnUVw=="],
+
+    "typescript": ["typescript@5.9.3", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw=="],
+
+    "undici-types": ["undici-types@8.3.0", "", {}, "sha512-j375ScV60dom+YkPFIfTLcOiPxkN/buHz5GobjLhixFuANaNs3C9l4GmrWqejgXWJ7BbJcFYpTEUkS1Ge8bpZQ=="],
+
+    "zhi": ["zhi@github:txthinkinginc/zhi.js#21707ee", { "dependencies": { "lib": "github:txthinking/bash" }, "peerDependencies": { "typescript": "^5" } }, "TxThinkingInc-zhi.js-21707ee", "sha512-Agsu91yPUU3r6atRBkSEugxpcL8w56CpYyHirK0iIYq3tL96upjDeSrXPkxFRsZUcw5K6snxSwNEZ5WoeilraA=="],
+  }
+}

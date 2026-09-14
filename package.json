@@ -1,1 +1,21 @@
-{ "dependencies": { "cron": "^3.1.7" } }
+{
+  "name": "brook-store",
+  "module": "index.js",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "commander": "^15.0.0",
+    "dotenv": "^17.4.2",
+    "ip6": "^0.2.13",
+    "lib": "github:txthinking/bash",
+    "nodemailer": "^9.1.0",
+    "rate-limiter-flexible": "^11.2.0",
+    "zhi": "github:txthinkinginc/zhi.js"
+  }
+}
