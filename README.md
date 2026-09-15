@@ -30,8 +30,12 @@ brook_store_redis_db=5
 brook_store_secret=12345678901234567890123456789012
 # Your brook store domain
 brook_store_domain=golang.cc
-brook_store_name_en="Go Cloud"
 brook_store_name_zh="Go 云"
+brook_store_name_en="Go Cloud"
+brook_store_name_ru="Go Cloud"
+brook_store_subtitle_zh="Go Cloud 提供安全的 TCP/UDP/IPv4/IPv6/DNS 保护"
+brook_store_subtitle_en="Go Cloud provides secure TCP/UDP/IPv4/IPv6/DNS protection"
+brook_store_subtitle_ru="Go Cloud обеспечивает надежную защиту для протоколов TCP, UDP, IPv4, IPv6 и DNS"
 brook_store_support=https://t.me/xxx
 # Payment link, the USER_ID placeholder will be replaced when click. You can also edit the source code to implement your own payment logic.
 brook_store_payment_link=https://xxx.com?user_id=USER_ID

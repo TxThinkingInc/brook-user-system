@@ -59,6 +59,10 @@ async function handle(req, server) {
         let config = {
             name_zh: process.env.brook_store_name_zh,
             name_en: process.env.brook_store_name_en,
+            name_ru: process.env.brook_store_name_ru,
+            subtitle_zh: process.env.brook_store_subtitle_zh,
+            subtitle_en: process.env.brook_store_subtitle_en,
+            subtitle_ru: process.env.brook_store_subtitle_ru,
             support: process.env.brook_store_support,
         }
         html = html.replace('<head>', `<head>\n    <script>window.APP_CONFIG = ${JSON.stringify(config)}</script>`)

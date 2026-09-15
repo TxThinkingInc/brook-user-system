@@ -675,7 +675,7 @@
             <div class="header">
                 <h1 class="logo">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" /></svg><span data-i18n="app_name">Brook Store</span></h1>
-                <div class="subtitle" id="appSubtitle"><span data-i18n="subtitle">童叟无欺的机场</span></div>
+                <div class="subtitle" id="appSubtitle"><span data-i18n="subtitle"></span></div>
             </div>
 
             <!-- 登录注册区 -->
@@ -792,13 +792,13 @@
                         <span data-i18n="recommend_client">Brook Store 推荐使用第三方 Brook 开源客户端</span>
                     </h3>
                     <div class="downloads-grid">
-                        <a href="https://apps.apple.com/us/app/brook-network-tool/id1216002642" class="btn btn-secondary" target="_blank">
+                        <a href="https://apps.apple.com/us/app/brook-app/id1216002642" class="btn btn-secondary" target="_blank">
                             <svg viewBox="0 0 384 512">
                                 <path fill="currentColor" d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z" />
                             </svg>
                             iOS
                         </a>
-                        <a href="https://apps.apple.com/us/app/brook-network-tool/id1216002642" class="btn btn-secondary" target="_blank">
+                        <a href="https://apps.apple.com/us/app/brook-app/id1216002642" class="btn btn-secondary" target="_blank">
                             <svg viewBox="0 0 384 512">
                                 <path fill="currentColor" d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z" />
                             </svg>
@@ -917,8 +917,8 @@ const locales = {
     en: {
         title: (window.APP_CONFIG?.name_en || ''),
         app_name: window.APP_CONFIG?.name_en || '',
-        subtitle: 'Secure and stable network service',
-        dashboard_subtitle: 'provides premium network services',
+        subtitle: window.APP_CONFIG?.subtitle_en || '',
+        dashboard_subtitle: window.APP_CONFIG?.subtitle_en || '',
         profile: 'Profile',
         subscribe_link: 'Subscribe Link',
         import_tutorial: 'Import Tutorial',
@@ -946,7 +946,7 @@ const locales = {
         link_desc: 'Import this link into the client to get the server list. Please keep it safe and do not share it with others.',
         personal_use_only: 'For personal use only, otherwise it may cause performance degradation.',
         copy_link: 'Copy Link',
-        recommend_client: '{app_name} recommends using the third-party open-source Brook client',
+        recommend_client: 'Recommend using the third-party open-source Brook client',
         step_1: 'Open the installed <strong>Brook</strong> client.',
         step_2: 'Log in with any email (<strong>Note: This email is independent of this account</strong>).',
         step_3: 'On the Brook client homepage, click the first <strong>+</strong> button from the left in the top right corner.',
@@ -978,8 +978,8 @@ const locales = {
     zh: {
         title: [window.APP_CONFIG?.name_zh, window.APP_CONFIG?.name_en].filter(Boolean).join(' '),
         app_name: window.APP_CONFIG?.name_zh || '',
-        subtitle: '安全稳定的网络服务',
-        dashboard_subtitle: '为您提供全面的网络服务',
+        subtitle: window.APP_CONFIG?.subtitle_zh || '',
+        dashboard_subtitle: window.APP_CONFIG?.subtitle_zh || '',
         profile: '个人中心',
         subscribe_link: '订阅链接',
         import_tutorial: '导入教程',
@@ -1007,7 +1007,7 @@ const locales = {
         link_desc: '将此链接导入至客户端中即可获取服务器列表，请妥善保管，勿泄露给他人。',
         personal_use_only: '仅限个人使用，否则可能导致性能下降。',
         copy_link: '复制链接',
-        recommend_client: '{app_name} 推荐使用第三方 Brook 开源客户端',
+        recommend_client: '推荐使用第三方 Brook 开源客户端',
         step_1: '打开已经安装好的 <strong>Brook</strong> 客户端。',
         step_2: '使用任意邮箱登录（<strong>注意：此邮箱与本系统账号无关</strong>）。',
         step_3: '在 Brook 客户端首页，点击右上角左数第一个 <strong>+</strong> 按钮。',
@@ -1037,10 +1037,10 @@ const locales = {
         expired: '已过期',
     },
     ru: {
-        title: window.APP_CONFIG?.name_en || '',
-        app_name: window.APP_CONFIG?.name_en || '',
-        subtitle: 'Безопасный и стабильный сетевой сервис',
-        dashboard_subtitle: 'предоставляет качественные сетевые услуги',
+        title: window.APP_CONFIG?.name_ru || window.APP_CONFIG?.name_en || '',
+        app_name: window.APP_CONFIG?.name_ru || window.APP_CONFIG?.name_en || '',
+        subtitle: window.APP_CONFIG?.subtitle_ru || '',
+        dashboard_subtitle: window.APP_CONFIG?.subtitle_ru || '',
         profile: 'Профиль',
         subscribe_link: 'Ссылка на подписку',
         import_tutorial: 'Руководство по импорту',
@@ -1068,7 +1068,7 @@ const locales = {
         link_desc: 'Импортируйте эту ссылку в клиент, чтобы получить список серверов. Храните её в безопасности и не передавайте другим.',
         personal_use_only: 'Только для личного использования, иначе это может привести к снижению производительности.',
         copy_link: 'Копировать ссылку',
-        recommend_client: '{app_name} рекомендует использовать сторонний клиент Brook',
+        recommend_client: 'Рекомендуем использовать сторонний клиент Brook',
         step_1: 'Откройте установленный клиент <strong>Brook</strong>.',
         step_2: 'Войдите с любым email (<strong>Примечание: этот email не связан с данным аккаунтом</strong>).',
         step_3: 'На главной странице клиента Brook нажмите первую кнопку <strong>+</strong> слева в правом верхнем углу.',
@@ -1147,9 +1147,17 @@ function setLanguage(lang) {
     const subtitleEl = $('appSubtitle');
     if (subtitleEl) {
         if ($('appContainer').classList.contains('dashboard-mode')) {
-            subtitleEl.innerHTML = `<span data-i18n="app_name">${locales[lang].app_name}</span> <span data-i18n="dashboard_subtitle">${locales[lang].dashboard_subtitle}</span>`;
+            if (locales[lang].dashboard_subtitle) {
+                subtitleEl.innerHTML = `<span data-i18n="dashboard_subtitle">${locales[lang].dashboard_subtitle}</span>`;
+            } else {
+                subtitleEl.innerHTML = '';
+            }
         } else {
-            subtitleEl.innerHTML = locales[lang].subtitle;
+            if (locales[lang].subtitle) {
+                subtitleEl.innerHTML = `<span data-i18n="subtitle">${locales[lang].subtitle}</span>`;
+            } else {
+                subtitleEl.innerHTML = '';
+            }
         }
     }
 }
@@ -1233,7 +1241,11 @@ function t(key) {
             $('loginCard').classList.remove('hidden');
             $('appContainer').classList.remove('dashboard-mode');
             $('appLayout').classList.remove('dashboard-mode');
-            $('appSubtitle').innerHTML = t('subtitle');
+            if (t('subtitle')) {
+                $('appSubtitle').innerHTML = `<span data-i18n="subtitle">${t('subtitle')}</span>`;
+            } else {
+                $('appSubtitle').innerHTML = '';
+            }
         }
 
         function showDashboard(user) {
@@ -1241,7 +1253,11 @@ function t(key) {
             $('dashboardCard').classList.remove('hidden');
             $('appContainer').classList.add('dashboard-mode');
             $('appLayout').classList.add('dashboard-mode');
-            $('appSubtitle').innerHTML = `<span data-i18n="app_name">${locales[currentLang].app_name}</span> <span data-i18n="dashboard_subtitle">${locales[currentLang].dashboard_subtitle}</span>`;
+            if (t('dashboard_subtitle')) {
+                $('appSubtitle').innerHTML = `<span data-i18n="dashboard_subtitle">${t('dashboard_subtitle')}</span>`;
+            } else {
+                $('appSubtitle').innerHTML = '';
+            }
 
             $('u_email').textContent = user.email;
             $('u_expiredat').innerHTML = formatDate(user.expiredat);
